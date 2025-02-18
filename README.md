@@ -8,6 +8,7 @@ java -jar target/MaxNumFromXlsx-0.0.1-SNAPSHOT.jar
 
 Swagger: http://localhost:8080/swagger-ui.html
 
+---
 
 ### Тестовое задание:
 написать на Java\Spring (любых версий) сервис:
