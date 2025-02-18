@@ -1,3 +1,4 @@
+Небольшой Spring Boot overcomplicated (в демонстрационных целях) single endpoint: ищет n-ое максимальное число в xlsx-файле. 
 # Инструкция по запуску:
 
     git clone https://github.com/Chex4ever/MaxNumberFromXlsx
