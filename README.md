@@ -1,12 +1,10 @@
 # Инструкция по запуску:
 
-git clone https://github.com/Chex4ever/MaxNumberFromXlsx
-
-mvnw clean install
-
-java -jar target/MaxNumFromXlsx-0.0.1-SNAPSHOT.jar
-
-Swagger: http://localhost:8080/swagger-ui.html
+    git clone https://github.com/Chex4ever/MaxNumberFromXlsx
+    cd MaxNumberFromXlsx
+    mvnw clean install
+    java -jar target/MaxNumFromXlsx-0.0.1-SNAPSHOT.jar
+    Swagger: http://localhost:8080/swagger-ui.html
 
 ---
 
