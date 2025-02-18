@@ -1,4 +1,4 @@
-Инструкция по запуску:
+# Инструкция по запуску:
 
 git clone https://github.com/Chex4ever/MaxNumberFromXlsx
 
@@ -9,7 +9,7 @@ java -jar target/MaxNumFromXlsx-0.0.1-SNAPSHOT.jar
 Swagger: http://localhost:8080/swagger-ui.html
 
 
-Тестовое задание:
+### Тестовое задание:
 написать на Java\Spring (любых версий) сервис:
 1. Должен быть доступен сваггер
 2. В сваггере единственный контроллер с единственным методом
@@ -23,7 +23,7 @@ Swagger: http://localhost:8080/swagger-ui.html
 
 
 
-todo:
+### todo:
 1. Метод должен принимать на вход ПУТЬ К ЛОКАЛЬНОМУ ФАЙЛУ, а не сам ФАЙЛ, переделать...
 2. Покрыть тестами...
 3. Избавиться от ResponseEntity в сервисах...
