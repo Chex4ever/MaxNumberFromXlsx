@@ -1,12 +1,11 @@
 package ru.comfortsoft.trial.maxnumfromxlsx.service.impl;
 
+import org.apache.poi.EmptyFileException;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import ru.comfortsoft.trial.maxnumfromxlsx.service.MaxNumFromXlsxService;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,33 +14,36 @@ import java.util.PriorityQueue;
 @Service
 public class MaxNumFromXlsxServiceImpl implements MaxNumFromXlsxService {
     @Override
-    public ResponseEntity<?> maxNumFromXlsx(MultipartFile file, int n) {
-        if (n<=0){
-            return ResponseEntity.badRequest().body("n должно быть больше 0");
+    public int maxNumFromXlsx(String filePath, int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("n должно быть больше 0");
         }
-        try {
+        try (FileInputStream file = new FileInputStream(filePath)) {
             List<Integer> numbers = readXlsx(file);
-            int result = nMaxNum(numbers, n);
-            return ResponseEntity.ok(result);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Ошибка при обработке файла. " + e.getMessage());
+            if (numbers.isEmpty()) {
+                throw new IllegalArgumentException("В файле не найдены числа");
+            }
+            return nMaxNum(numbers, n);
+        } catch (IOException | EmptyFileException e) {
+            throw new IllegalArgumentException("Ошибка при обработке файла. " + e.getMessage());
         }
     }
 
     /**
      * Находим n-ое максимально число из несортированного списка чисел.
-     * Стандартный способ для такой задачи, даже IDEA подставила большинство
-     * кода, мне надо было только начать PriorityQ... и нажимать TAB :)
-     * ну почти...
+     * Обрати внимание, предварительно уже есть проверки на ненулевой n и numbers, поэтому
+     * здесь уже нет проверок, зато есть SuppressWarnings ;)
+     *
      * @param numbers список целых чисел
-     * @param n которое по счёту максимальное число будем искать
+     * @param n       которое по счёту максимальное число будем искать
      * @return n-ое максимально число
      */
+    @SuppressWarnings("DataFlowIssue")
     private int nMaxNum(List<Integer> numbers, int n) {
         PriorityQueue<Integer> queue = new PriorityQueue<>();
-        for (int num: numbers) {
+        for (int num : numbers) {
             queue.offer(num);
-            if (queue.size() > n){
+            if (queue.size() > n) {
                 queue.poll();
             }
         }
@@ -49,15 +51,16 @@ public class MaxNumFromXlsxServiceImpl implements MaxNumFromXlsxService {
     }
 
     /**
-     * Извлекаем целые числа из первого столбца XLSX-файла
-     * @param file XLSX-файл
+     * Читаем XLSX-файла и извлекаем целые числа из первого столбца
+     *
+     * @param file FileInputStream XLSX-файла
      * @return список целых чисел
      * @throws IOException если не сможет прочитать файл, то что с этим делать
-     * должен решать вызывающий метод
+     *                     должен решать вызывающий метод
      */
-    private List<Integer> readXlsx(MultipartFile file) throws IOException {
+    private List<Integer> readXlsx(FileInputStream file) throws IOException {
         List<Integer> numbers = new ArrayList<>();
-        Workbook workbook = WorkbookFactory.create(file.getInputStream());
+        Workbook workbook = WorkbookFactory.create(file);
         Sheet sheet = workbook.getSheetAt(0);
         for (Row row : sheet) {
             Cell cell = row.getCell(0);
@@ -65,7 +68,7 @@ public class MaxNumFromXlsxServiceImpl implements MaxNumFromXlsxService {
                 numbers.add((int) cell.getNumericCellValue());
             }
         }
-    workbook.close();
+        workbook.close();
         return numbers;
     }
 
