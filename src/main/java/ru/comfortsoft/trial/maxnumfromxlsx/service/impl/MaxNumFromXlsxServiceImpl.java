@@ -1,8 +1,7 @@
 package ru.comfortsoft.trial.maxnumfromxlsx.service.impl;
 
+import org.apache.poi.EmptyFileException;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.comfortsoft.trial.maxnumfromxlsx.service.MaxNumFromXlsxService;
 
@@ -15,19 +14,18 @@ import java.util.PriorityQueue;
 @Service
 public class MaxNumFromXlsxServiceImpl implements MaxNumFromXlsxService {
     @Override
-    public ResponseEntity<?> maxNumFromXlsx(String filePath, int n) {
+    public int maxNumFromXlsx(String filePath, int n) {
         if (n <= 0) {
-            return ResponseEntity.badRequest().body("n должно быть больше 0");
+            throw new IllegalArgumentException("n должно быть больше 0");
         }
         try (FileInputStream file = new FileInputStream(filePath)) {
             List<Integer> numbers = readXlsx(file);
             if (numbers.isEmpty()) {
-                return ResponseEntity.badRequest().body("Файл пустой");
+                throw new IllegalArgumentException("В файле не найдены числа");
             }
-            int result = nMaxNum(numbers, n);
-            return ResponseEntity.ok(result);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Ошибка при обработке файла. " + e.getMessage());
+            return nMaxNum(numbers, n);
+        } catch (IOException | EmptyFileException e) {
+            throw new IllegalArgumentException("Ошибка при обработке файла. " + e.getMessage());
         }
     }
 
